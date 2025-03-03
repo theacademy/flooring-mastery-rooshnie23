@@ -18,4 +18,15 @@ public class FlooringMasteryView {
     io.print("*\n"+"* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
     return io.readInt("Please select from the above choices.", 1, 6);
   }
+  public void displayExitBanner() {
+    io.print("Good Bye!!!");
+  }
+
+  public void displayUnknownCommandBanner() {
+    io.print("Unknown Command!!!");
+  }
+  public void displayErrorMessage(String errorMsg) {
+    io.print("=== ERROR ===");
+    io.print(errorMsg);
+  }
 }
