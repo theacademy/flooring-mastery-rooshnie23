@@ -15,11 +15,8 @@ public class Order {
   private BigDecimal taxAmount;
   private BigDecimal totalCost;
 
-  public Order(Integer orderNumber, String customerName, String state, Tax tax, String productType){
+  public Order(Integer orderNumber){
     this.orderNumber = orderNumber;
-    this.customerName = customerName;
-    this.state = state;
-    this.tax = tax;
   }
 
   public Integer getOrderNumber() {
