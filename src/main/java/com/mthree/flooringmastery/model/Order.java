@@ -2,11 +2,12 @@ package com.mthree.flooringmastery.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Order {
   private LocalDate orderDate;
-  private Integer orderNumber;
+  private String orderNumber;
   private String customerName;
   private String state;
   private Tax tax;
@@ -17,18 +18,24 @@ public class Order {
   private BigDecimal taxAmount;
   private BigDecimal totalCost;
 
-  public Order(LocalDate orderDate){
-    this.orderDate = orderDate;
+  public Order(String orderNumber){
+    this.orderNumber = orderNumber;
+//    this.orderDate = LocalDate.now();//.format(DateTimeFormatter.ofPattern("MMddyyyy"));
   }
+
   public LocalDate getOrderDate() {
     return orderDate;
   }
 
-  public Integer getOrderNumber() {
+  public void setOrderDate(LocalDate orderDate) {
+    this.orderDate = orderDate;
+  }
+
+  public String getOrderNumber() {
     return orderNumber;
   }
 
-  public void setOrderNumber(Integer orderNumber) {
+  public void setOrderNumber(String orderNumber) {
     this.orderNumber = orderNumber;
   }
 
@@ -137,7 +144,7 @@ public class Order {
   public String toString() {
     return "Order{" +
         "orderDate=" + orderDate +
-        "orderNumber=" + orderNumber +
+        ", orderNumber=" + orderNumber +
         ", customerName='" + customerName + '\'' +
         ", state='" + state + '\'' +
         ", taxRate=" + tax.getTaxRate() +
@@ -149,6 +156,6 @@ public class Order {
         ", laborCost=" + laborCost +
         ", taxAmount=" + taxAmount +
         ", totalCost=" + totalCost +
-        '}';
+        "}\n";
   }
 }
