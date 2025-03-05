@@ -1,16 +1,13 @@
 package com.mthree.flooringmastery.controller;
 
-import com.mthree.flooringmastery.model.Order;
-import com.mthree.flooringmastery.service.OrderServiceLayer;
+import com.mthree.flooringmastery.service.FlooringMasteryService;
 import com.mthree.flooringmastery.ui.FlooringMasteryView;
-import java.time.LocalDate;
-import java.util.List;
 
-public class FlooringController {
-  private OrderServiceLayer orderService;
+public class FlooringMasteryController {
+  private FlooringMasteryService orderService;
   private FlooringMasteryView view;
 
-  public FlooringController(OrderServiceLayer orderService, FlooringMasteryView view) {
+  public FlooringMasteryController(FlooringMasteryService orderService, FlooringMasteryView view) {
     this.orderService = orderService;
     this.view = view;
   }

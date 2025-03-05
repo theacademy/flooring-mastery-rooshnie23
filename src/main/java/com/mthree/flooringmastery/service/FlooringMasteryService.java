@@ -1,5 +1,5 @@
 package com.mthree.flooringmastery.service;
 
-public interface OrderServiceLayer {
+public interface FlooringMasteryService {
 
 }

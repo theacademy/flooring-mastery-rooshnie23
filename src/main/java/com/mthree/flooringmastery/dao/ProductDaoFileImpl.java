@@ -3,7 +3,7 @@ package com.mthree.flooringmastery.dao;
 import com.mthree.flooringmastery.model.Product;
 import java.util.List;
 
-public class ProductDaoImpl implements ProductDao {
+public class ProductDaoFileImpl implements ProductDao {
 
   @Override
   public Product getProductByType(String productType) {

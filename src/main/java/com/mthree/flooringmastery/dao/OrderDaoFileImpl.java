@@ -4,7 +4,7 @@ import com.mthree.flooringmastery.model.Order;
 import java.util.List;
 import java.time.LocalDate;
 
-public class OrderDaoImpl implements OrderDao {
+public class OrderDaoFileImpl implements OrderDao {
 
   @Override
   public List<Order> getOrdersByDate(LocalDate date) {
