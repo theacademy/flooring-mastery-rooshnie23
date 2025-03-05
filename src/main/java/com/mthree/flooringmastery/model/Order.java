@@ -1,9 +1,11 @@
 package com.mthree.flooringmastery.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Order {
+  private LocalDate orderDate;
   private Integer orderNumber;
   private String customerName;
   private String state;
@@ -15,8 +17,11 @@ public class Order {
   private BigDecimal taxAmount;
   private BigDecimal totalCost;
 
-  public Order(Integer orderNumber){
-    this.orderNumber = orderNumber;
+  public Order(LocalDate orderDate){
+    this.orderDate = orderDate;
+  }
+  public LocalDate getOrderDate() {
+    return orderDate;
   }
 
   public Integer getOrderNumber() {
@@ -108,7 +113,8 @@ public class Order {
       return false;
     }
     Order order = (Order) o;
-    return Objects.equals(orderNumber, order.orderNumber)
+    return Objects.equals(orderDate, order.orderDate)
+        && Objects.equals(orderNumber, order.orderNumber)
         && Objects.equals(customerName, order.customerName)
         && Objects.equals(state, order.state)
         && Objects.equals(tax.getTaxRate(), order.tax.getTaxRate())
@@ -130,6 +136,7 @@ public class Order {
   @Override
   public String toString() {
     return "Order{" +
+        "orderDate=" + orderDate +
         "orderNumber=" + orderNumber +
         ", customerName='" + customerName + '\'' +
         ", state='" + state + '\'' +
