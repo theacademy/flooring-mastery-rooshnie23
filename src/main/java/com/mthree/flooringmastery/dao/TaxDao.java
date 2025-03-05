@@ -4,4 +4,6 @@ import com.mthree.flooringmastery.model.Tax;
 
 public interface TaxDao {
   Tax getTaxByState(String state);
+  String getStateName();
+  String getStateAbbr();
 }
