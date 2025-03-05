@@ -16,12 +16,12 @@ public class TaxDaoFileImpl implements TaxDao {
 
   public TaxDaoFileImpl() {
     this.TAX_FILE = "Data/Taxes.txt";
+    loadTaxes();
   }
 
-
   @Override
-  public Tax getTaxByState(String state) {
-    return null;
+  public Tax getTaxByState(String stateAbbr) {
+    return taxes.get(stateAbbr);
   }
 
   @Override
@@ -33,6 +33,7 @@ public class TaxDaoFileImpl implements TaxDao {
   public String getStateAbbr() {
     return "";
   }
+
   private Tax unmarshallTax(String taxesAsText) {
     String[] taxTokens = taxesAsText.split(DELIMITER);
 
@@ -46,7 +47,7 @@ public class TaxDaoFileImpl implements TaxDao {
     return taxFromFile;
   }
 
-  private void loadRoster() throws FlooringMasterPersistenceException {
+  private void loadTaxes() throws FlooringMasterPersistenceException {
     Scanner scanner;
 
     try {
@@ -71,7 +72,7 @@ public class TaxDaoFileImpl implements TaxDao {
 
       // We are going to use the student id as the map key for our student object.
       // Put currentStudent into the map using student id as the key
-      taxes.put(currentTax.getStateName(), currentTax);
+      taxes.put(currentTax.getStateAbbreviation(), currentTax);
     }
     // close scanner
     scanner.close();
