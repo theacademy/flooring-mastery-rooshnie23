@@ -39,6 +39,10 @@ public class OrderDaoFileImpl implements OrderDao {
 
   @Override
   public void editOrder(String orderNumber, LocalDate date) { //maybe the object
+      if (doesOrderFileExist(date)) {
+        getOrdersByDate(date);
+        writeOrder(date);
+      }
 
   }
 
