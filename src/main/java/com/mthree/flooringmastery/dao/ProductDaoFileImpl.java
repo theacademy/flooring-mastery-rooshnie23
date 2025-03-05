@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,30 +14,31 @@ import java.util.Scanner;
 public class ProductDaoFileImpl implements ProductDao {
   public static String PRODUCT_FILE;
   public static final String DELIMITER = ",";
-  private final Map<Integer, Product> products = new HashMap<>();
+  private final Map<String, Product> products = new HashMap<>();
 
   public ProductDaoFileImpl() {
     this.PRODUCT_FILE = "Data/Products.txt";
+    loadProducts();
   }
 
   @Override
   public Product getProductType(String productType) {
-    return null;
+    return products.get(productType);
   }
 
   @Override
   public List<Product> getAllProducts() {
-    return List.of();
+    return new ArrayList<>(products.values());
   }
 
   @Override
   public BigDecimal getCostPerSquareFoot(String productType) {
-    return null;
+    return products.get(productType).getCostPerSquareFoot();
   }
 
   @Override
   public BigDecimal getLaborCostPerSquareFoot(String productType) {
-    return null;
+    return products.get(productType).getLaborCostPerSquareFoot();
   }
   private Product unmarshallProduct(String productsAsText) {
     String[] productTokens = productsAsText.split(DELIMITER);
@@ -51,9 +53,8 @@ public class ProductDaoFileImpl implements ProductDao {
     return productFromFile;
   }
 
-  private void loadRoster() throws FlooringMasterPersistenceException {
+  private void loadProducts() throws FlooringMasterPersistenceException {
     Scanner scanner;
-    int id = 0;
 
     try {
       // Create Scanner for reading the file
@@ -77,16 +78,11 @@ public class ProductDaoFileImpl implements ProductDao {
 
       // We are going to use the student id as the map key for our student object.
       // Put currentStudent into the map using student id as the key
-      products.put(id, currentProduct);
-      id++;
+      products.put(currentProduct.getProductType(), currentProduct);
+
     }
     // close scanner
     scanner.close();
   }
 
-  public static void main(String[] args) {
-    ProductDaoFileImpl productDao = new ProductDaoFileImpl();
-    productDao.loadRoster();
-    System.out.println(productDao.products);
-  }
 }
