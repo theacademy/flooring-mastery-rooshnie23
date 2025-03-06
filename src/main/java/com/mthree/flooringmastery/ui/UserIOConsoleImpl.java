@@ -1,5 +1,9 @@
 package com.mthree.flooringmastery.ui;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class UserIOConsoleImpl implements UserIO {
@@ -42,66 +46,49 @@ public class UserIOConsoleImpl implements UserIO {
   }
 
   @Override
-  public double readDouble(String prompt) {
+  public LocalDate readDate(String prompt) {
     while (true) {
       try {
         print(prompt);
-        return Double.parseDouble(scanner.nextLine());
-      } catch (NumberFormatException e) {
-        print("Invalid input. Please enter a valid double.");
+        return LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+      } catch (DateTimeParseException e) {
+        print("Invalid input. Please enter a valid date in MM-DD-YYYY format.");
       }
     }
   }
 
   @Override
-  public double readDouble(String prompt, double min, double max) {
-    double value;
-    do {
-      value = readDouble(prompt + " (between " + min + " and " + max + "):");
-    } while (value < min || value > max);
-    return value;
-  }
+  public LocalDate readDateFuture(String prompt) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
-  @Override
-  public float readFloat(String prompt) {
     while (true) {
       try {
         print(prompt);
-        return Float.parseFloat(scanner.nextLine());
-      } catch (NumberFormatException e) {
-        print("Invalid input. Please enter a valid float.");
+        LocalDate date = LocalDate.parse(scanner.nextLine(), formatter);
+
+        if (date.isBefore(LocalDate.now())) {
+          print("Invalid input. The date cannot be in the past. Please enter a valid future or present date.");
+          continue;
+        }
+
+        return date;
+      } catch (DateTimeParseException e) {
+        print("Invalid input. Please enter a valid date in MM-DD-YYYY format.");
       }
     }
   }
 
   @Override
-  public float readFloat(String prompt, float min, float max) {
-    float value;
-    do {
-      value = readFloat(prompt + " (between " + min + " and " + max + "):");
-    } while (value < min || value > max);
-    return value;
-  }
-
-  @Override
-  public long readLong(String prompt) {
+  public BigDecimal readBigDecimal(String prompt) {
     while (true) {
       try {
         print(prompt);
-        return Long.parseLong(scanner.nextLine());
+        return new BigDecimal(scanner.nextLine());
       } catch (NumberFormatException e) {
-        print("Invalid input. Please enter a valid long.");
+        print("Invalid input. Please enter a valid decimal number.");
       }
     }
   }
 
-  @Override
-  public long readLong(String prompt, long min, long max) {
-    long value;
-    do {
-      value = readLong(prompt + " (between " + min + " and " + max + "):");
-    } while (value < min || value > max);
-    return value;
-  }
 }
 
