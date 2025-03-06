@@ -18,11 +18,6 @@ public class Order {
   private BigDecimal taxAmount;
   private BigDecimal totalCost;
 
-  public Order(String orderNumber){
-    this.orderNumber = orderNumber;
-//    this.orderDate = LocalDate.now();//.format(DateTimeFormatter.ofPattern("MMddyyyy"));
-  }
-
   public LocalDate getOrderDate() {
     return orderDate;
   }
