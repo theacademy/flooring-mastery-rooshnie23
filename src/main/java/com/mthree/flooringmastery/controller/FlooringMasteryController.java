@@ -1,14 +1,20 @@
 package com.mthree.flooringmastery.controller;
 
+import com.mthree.flooringmastery.model.Order;
+import com.mthree.flooringmastery.model.Product;
 import com.mthree.flooringmastery.service.FlooringMasteryService;
 import com.mthree.flooringmastery.ui.FlooringMasteryView;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
 public class FlooringMasteryController {
-  private FlooringMasteryService orderService;
+
+  private final FlooringMasteryService service;
   private FlooringMasteryView view;
 
-  public FlooringMasteryController(FlooringMasteryService orderService, FlooringMasteryView view) {
-    this.orderService = orderService;
+  public FlooringMasteryController(FlooringMasteryService service, FlooringMasteryView view) {
+    this.service = service;
     this.view = view;
   }
 
@@ -34,6 +40,9 @@ public class FlooringMasteryController {
             removeOrder();
             break;
           case 5:
+            exportData();
+            break;
+          case 6:
             keepGoing = false;
             break;
           default:
@@ -52,28 +61,100 @@ public class FlooringMasteryController {
   }
 
   private void displayOrders() {
-//    LocalDate date = view.getDate();
-//    List<Order> orders = orderService.getOrdersByDate(date);
-//    view.displayOrders(orders);
+    LocalDate date = view.getDateInput();
+    List<Order> orders = service.getOrdersByDate(date);
+    view.displayOrders(orders);
   }
 
   private void addOrder() {
-//    Order order = view.getOrderInfo();
-//    orderService.addOrder(order);
-//    view.displayOrderSummary(order);
+    LocalDate date = view.getDateAfter();
+
+    // Validate customer name
+    String customerName;
+    while (true) {
+      try {
+        customerName = view.getCustomerName();
+        service.validateCustomerName(customerName);
+        break;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage(e.getMessage());
+      }
+  }
+
+    // Validate state
+    String state;
+    while (true) {
+      try {
+        state = view.getState();
+        service.validateState(state);
+        break;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage(e.getMessage());
+      }
+    }
+
+    // Fetch all products from the service and display them
+    List<Product> products = service.getAllProducts();
+    String productType = view.getProductSelection(products);
+
+    // Validate area
+    BigDecimal area;
+    while (true) {
+      try {
+        area = view.getArea();
+        service.validateArea(area);
+        break;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage(e.getMessage());
+      }
+    }
+    Order newOrder = service.addOrder(date, customerName, state, productType, area);
+
+    // Confirm before adding
+    view.displayOrderDetails(newOrder);
   }
 
   private void editOrder() {
-//    LocalDate date = view.getDate();
-//    int orderNumber = view.getOrderNumber();
-//    orderService.removeOrder(date, orderNumber);
-//    view.displayMessage("Order removed.");
+    LocalDate date = view.getDateInput();
+    String orderNumber = view.getOrderNumber();
+    Order existingOrder = service.getOrder(orderNumber, date);
+
+    if (existingOrder == null) {
+      view.displayMessage("Order not found.");
+      return;
+    }
+
+    Order updatedOrder = view.getUpdatedOrderDetails(existingOrder);
+    try {
+      Order editedOrder = service.editOrder(orderNumber, date, updatedOrder);
+      view.displayOrderDetails(editedOrder);
+    } catch (IllegalArgumentException e) {
+      view.displayErrorMessage("Error: " + e.getMessage());
+    }
   }
+
   private void removeOrder() {
-//    LocalDate date = view.getDate();
-//    int orderNumber = view.getOrderNumber();
-//    orderService.removeOrder(date, orderNumber);
-//    view.displayMessage("Order removed.");
+    LocalDate date = view.getDateInput();
+    String orderNumber = view.getOrderNumber();
+
+    Order existingOrder = service.getOrder(orderNumber, date);
+    if (existingOrder == null) {
+      view.displayMessage("Order not found.");
+      return;
+    }
+
+    boolean confirm = view.getConfirmation("Are you sure you want to remove this order? (Y/N): ");
+    if (confirm) {
+      service.removeOrder(orderNumber, date);
+      view.displayMessage("Order removed successfully.");
+    } else {
+      view.displayMessage("Order removal cancelled.");
+    }
+  }
+
+  private void exportData() {
+    service.exportAllData();
+    view.displayMessage("All orders have been exported successfully.");
   }
   private void unknownCommand() {
     view.displayUnknownCommandBanner();
