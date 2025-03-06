@@ -20,7 +20,7 @@ public class OrderDaoFileImpl implements OrderDao {
 
   @Override
   public List<Order> getOrdersByDate(LocalDate date) {
-    if(!doesOrderFileExist(date)){
+    if(doesOrderFileExist(date)){
       loadOrders("Orders/Orders_" + date.format(formatter) + ".txt");
     }
     return new ArrayList<>(orders.values());
@@ -34,6 +34,7 @@ public class OrderDaoFileImpl implements OrderDao {
   @Override
   public void addOrder(String orderNumber, Order order) {
     orders.put(orderNumber, order);
+    getOrdersByDate(order.getOrderDate());
     writeOrder(order.getOrderDate());
   }
 
@@ -69,7 +70,8 @@ public class OrderDaoFileImpl implements OrderDao {
 
     String orderNumber = orderTokens[0];
 
-    Order orderFromFile = new Order(orderNumber);
+    Order orderFromFile = new Order();
+    orderFromFile.setOrderNumber(orderNumber);
     orderFromFile.setCustomerName(orderTokens[1]);
     orderFromFile.setState(orderTokens[2]);
     orderFromFile.setTax(taxDao.getTaxByState(orderTokens[2]));
@@ -145,9 +147,8 @@ public class OrderDaoFileImpl implements OrderDao {
     } catch (IOException e) {
       throw new FlooringMasterPersistenceException("Could not save student data.", e);
     }
-
     String studentAsText;
-    List<Order> orderList = this.getOrdersByDate(date);
+    List<Order> orderList = new ArrayList<>(orders.values());
     out.println("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total");
     for (Order currentOrder : orderList) {
       // turn a Student into a String
@@ -164,7 +165,8 @@ public class OrderDaoFileImpl implements OrderDao {
 public static void main(String[] args) {
     OrderDaoFileImpl orderDao = new OrderDaoFileImpl();
    // orderDao.loadOrders("Orders/Orders_06022013.txt");
-  Order orderFromFile = new Order("1");
+  Order orderFromFile = new Order();
+  orderFromFile.setOrderNumber("1");
   orderFromFile.setCustomerName("m");
   orderFromFile.setState("CA");
   orderFromFile.setTax(new Tax(orderFromFile.getState()));
@@ -177,10 +179,7 @@ public static void main(String[] args) {
   orderFromFile.setOrderDate(LocalDate.now());
   orderDao.addOrder("1",orderFromFile);
 
-  orderDao.addOrder("1", orderFromFile);
     System.out.println(orderDao.orders);
-    orderDao.removeOrder("1",LocalDate.now());
-    System.out.println(orderDao.orders);
-    System.out.println(orderDao.doesOrderFileExist(LocalDate.now()));
+
 }
 }
