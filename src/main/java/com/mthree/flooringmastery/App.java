@@ -22,10 +22,8 @@ public class App {
      OrderDao myDao = new OrderDaoFileImpl();
      TaxDao myTaxDao = new TaxDaoFileImpl();
      ProductDao myProductDao = new ProductDaoFileImpl();
-     FlooringMasteryService myService =
-           new FlooringMasteryServiceImpl(myDao, myTaxDao, myProductDao);
-     FlooringMasteryController controller =
-           new FlooringMasteryController(myService, myView);
+     FlooringMasteryService myService = new FlooringMasteryServiceImpl(myDao, myTaxDao, myProductDao);
+     FlooringMasteryController controller = new FlooringMasteryController(myService, myView);
      controller.run();
   }
 }
