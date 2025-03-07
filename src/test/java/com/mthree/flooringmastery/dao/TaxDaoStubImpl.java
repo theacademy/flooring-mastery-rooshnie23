@@ -28,13 +28,4 @@ public class TaxDaoStubImpl implements TaxDao {
     return taxRates.get(stateAbbr);
   }
 
-  @Override
-  public String getStateName() {
-    return "Stub State";
-  }
-
-  @Override
-  public String getStateAbbr() {
-    return "SS";
-  }
 }

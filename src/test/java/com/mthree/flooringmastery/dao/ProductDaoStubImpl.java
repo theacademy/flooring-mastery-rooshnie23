@@ -36,15 +36,4 @@ public class ProductDaoStubImpl implements ProductDao {
     return new ArrayList<>(products);
   }
 
-  @Override
-  public BigDecimal getCostPerSquareFoot(String productType) {
-    Product product = getProductType(productType);
-    return (product != null) ? product.getCostPerSquareFoot() : BigDecimal.ZERO;
-  }
-
-  @Override
-  public BigDecimal getLaborCostPerSquareFoot(String productType) {
-    Product product = getProductType(productType);
-    return (product != null) ? product.getLaborCostPerSquareFoot() : BigDecimal.ZERO;
-  }
 }

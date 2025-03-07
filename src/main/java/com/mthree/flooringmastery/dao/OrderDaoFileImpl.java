@@ -1,8 +1,6 @@
 package com.mthree.flooringmastery.dao;
 
 import com.mthree.flooringmastery.model.Order;
-import com.mthree.flooringmastery.model.Product;
-import com.mthree.flooringmastery.model.Tax;
 import java.io.*;
 import java.util.*;
 import java.math.BigDecimal;
@@ -107,6 +105,7 @@ public class OrderDaoFileImpl implements OrderDao {
     orderFromFile.setLaborCost(new BigDecimal(orderTokens[9]));
     orderFromFile.setTaxAmount(new BigDecimal(orderTokens[10]));
     orderFromFile.setTotalCost(new BigDecimal(orderTokens[11]));
+    //this is to extract the date from the file name
     LocalDate orderDate = Pattern.compile("_(\\d{8})\\.txt$")
         .matcher(orderFile)
         .results()
@@ -187,25 +186,4 @@ public class OrderDaoFileImpl implements OrderDao {
     // Clean up
     out.close();
   }
-
-public static void main(String[] args) {
-    OrderDaoFileImpl orderDao = new OrderDaoFileImpl();
-   // orderDao.loadOrders("Orders/Orders_06022013.txt");
-  Order orderFromFile = new Order();
-  orderFromFile.setOrderNumber("1");
-  orderFromFile.setCustomerName("m");
-  orderFromFile.setState("CA");
-  orderFromFile.setTax(new Tax(orderFromFile.getState()));
-  orderFromFile.setProduct(new Product("Tile"));
-  orderFromFile.setArea(new BigDecimal("1.4"));
-  orderFromFile.setMaterialCost(new BigDecimal("1.4"));
-  orderFromFile.setLaborCost(new BigDecimal("1.4"));
-  orderFromFile.setTaxAmount(new BigDecimal("1.4"));
-  orderFromFile.setTotalCost(new BigDecimal("1.4"));
-  orderFromFile.setOrderDate(LocalDate.now());
-  orderDao.addOrder("1",orderFromFile);
-
-    System.out.println(orderDao.orders);
-
-}
 }

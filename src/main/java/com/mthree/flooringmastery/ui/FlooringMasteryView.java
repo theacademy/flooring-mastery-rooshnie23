@@ -42,7 +42,7 @@ public class FlooringMasteryView {
 
   public void displayOrders(List<Order> orders) {
     if (orders.isEmpty()) {
-      System.out.println("No orders found.");
+      io.print("No orders found.");
     } else {
       for (Order order : orders) {
         displayOrderDetails(order);
@@ -80,7 +80,7 @@ public class FlooringMasteryView {
   }
 
   public void displayOrderDetails(Order savedOrder) {
-    System.out.println("Order Details:");
+    io.print("Order Details:");
     io.print("Date: " + savedOrder.getOrderDate());
     io.print("Order Number: " + savedOrder.getOrderNumber());
     io.print("Customer Name: " + savedOrder.getCustomerName());

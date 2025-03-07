@@ -118,12 +118,11 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     return productDao.getAllProducts();
   }
 
-  private String generateOrderNumber(LocalDate date) {
-    List<Order> orders = orderDao.getOrdersByDate(date);
-    int maxOrderNumber = orders.stream().mapToInt(o -> Integer.parseInt(o.getOrderNumber())).max()
-        .orElse(0);
-    System.out.println(maxOrderNumber);
-    return String.valueOf(maxOrderNumber + 1);
+  private String generateOrderNumber(LocalDate date) { //goes through the map finds the largest int and sets to the next biggest
+    return String.valueOf(orderDao.getOrdersByDate(date).stream()
+        .mapToInt(o -> Integer.parseInt(o.getOrderNumber()))
+        .max()
+        .orElse(0) + 1);
   }
 
   private void recalculateOrder(Order order) {
