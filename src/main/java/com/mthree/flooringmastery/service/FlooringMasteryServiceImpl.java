@@ -7,6 +7,7 @@ import com.mthree.flooringmastery.dao.TaxDao;
 import com.mthree.flooringmastery.model.Order;
 import com.mthree.flooringmastery.model.Product;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -117,9 +118,6 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     return productDao.getAllProducts();
   }
 
-  /**
-   * Helper method to generate an order number
-   */
   private String generateOrderNumber(LocalDate date) {
     List<Order> orders = orderDao.getOrdersByDate(date);
     int maxOrderNumber = orders.stream().mapToInt(o -> Integer.parseInt(o.getOrderNumber())).max()
@@ -128,14 +126,11 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     return String.valueOf(maxOrderNumber + 1);
   }
 
-  /**
-   * Helper method to recalculate order total
-   */
   private void recalculateOrder(Order order) {
     BigDecimal materialCost = order.getArea().multiply(order.getProduct().getCostPerSquareFoot());
     BigDecimal laborCost = order.getArea().multiply(order.getProduct().getLaborCostPerSquareFoot());
     BigDecimal taxAmount = (materialCost.add(laborCost)).multiply(
-        order.getTax().getTaxRate().divide(BigDecimal.valueOf(100))).setScale(2, BigDecimal.ROUND_HALF_UP);
+        order.getTax().getTaxRate().divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP));
     BigDecimal totalCost = materialCost.add(laborCost).add(taxAmount);
 
     order.setMaterialCost(materialCost);

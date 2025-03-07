@@ -7,6 +7,4 @@ import java.util.List;
 public interface ProductDao {
   Product getProductType(String productType) throws FlooringMasterPersistenceException;
   List<Product> getAllProducts() throws FlooringMasterPersistenceException;
-  BigDecimal getCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException;
-  BigDecimal getLaborCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException;
 }

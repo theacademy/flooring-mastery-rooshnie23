@@ -31,15 +31,6 @@ public class ProductDaoFileImpl implements ProductDao {
     return new ArrayList<>(products.values());
   }
 
-  @Override
-  public BigDecimal getCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException{
-    return products.get(productType).getCostPerSquareFoot();
-  }
-
-  @Override
-  public BigDecimal getLaborCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException{
-    return products.get(productType).getLaborCostPerSquareFoot();
-  }
   private Product unmarshallProduct(String productsAsText) {
     String[] productTokens = productsAsText.split(DELIMITER);
 

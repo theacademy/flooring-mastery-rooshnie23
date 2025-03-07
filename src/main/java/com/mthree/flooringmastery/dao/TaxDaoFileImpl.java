@@ -24,16 +24,6 @@ public class TaxDaoFileImpl implements TaxDao {
     return taxes.get(stateAbbr);
   }
 
-  @Override
-  public String getStateName() throws FlooringMasterPersistenceException {
-    return "";
-  }
-
-  @Override
-  public String getStateAbbr() throws FlooringMasterPersistenceException{
-    return "";
-  }
-
   private Tax unmarshallTax(String taxesAsText) {
     String[] taxTokens = taxesAsText.split(DELIMITER);
 
