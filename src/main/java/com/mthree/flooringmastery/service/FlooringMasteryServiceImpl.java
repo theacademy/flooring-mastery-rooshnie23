@@ -142,7 +142,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
   @Override
   public void validateState(String state) {
-    if (taxDao.getTaxByState(state) == null) {
+    if (taxDao.getTaxByState(state.toUpperCase()) == null) {
       throw new IllegalArgumentException("Invalid state. We do not sell in this state.");
     }
   }
