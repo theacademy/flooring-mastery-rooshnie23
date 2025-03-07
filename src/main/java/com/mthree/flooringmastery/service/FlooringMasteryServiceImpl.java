@@ -30,7 +30,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
   @Override
   public Order getOrder(String orderNumber, LocalDate date) {
-    return orderDao.getOrder(orderNumber);
+    return orderDao.getOrder(orderNumber,date);
   }
 
   @Override
@@ -54,46 +54,65 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
   }
 
   @Override
-  public Order editOrder(String orderNumber, LocalDate date, Order newOrderData) {
-    List<Order> orders = orderDao.getOrdersByDate(date);
+  public Order editOrder(String orderNumber, LocalDate date, String newCustomerName, String newState, String newProductType, String newArea) {
+    Order existingOrder = orderDao.getOrder(orderNumber,date);
+    boolean changed = false;
 
-    // Find existing order
-    Order existingOrder = orders.stream().filter(o -> o.getOrderNumber().equals(orderNumber))
-        .findFirst().orElseThrow(() -> new FlooringMasterPersistenceException("Order not found!"));
-
-    // Update fields if new values are provided
-    if (!newOrderData.getCustomerName().isBlank()) {
-      existingOrder.setCustomerName(newOrderData.getCustomerName());
+    if (!newCustomerName.equals(existingOrder.getCustomerName())) {
+      existingOrder.setCustomerName(newCustomerName);
     }
 
-    if (!newOrderData.getState().isBlank()) {
-      Tax tax = taxDao.getTaxByState(newOrderData.getState());
-      if (tax != null) {
-        existingOrder.setState(newOrderData.getState());
-        existingOrder.setTax(tax);
-      } else {
-        throw new IllegalArgumentException("We do not sell in this state.");
-      }
+    if (!newState.equals(existingOrder.getState())) {
+      existingOrder.setState(newState);
+      changed = true;
     }
 
-    if (!newOrderData.getProduct().getProductType().isBlank()) {
-      Product product = productDao.getProductType(newOrderData.getProduct().getProductType());
-      if (product != null) {
-        existingOrder.setProduct(product);
-      } else {
-        throw new IllegalArgumentException("Invalid product type.");
-      }
+    if (!newProductType.equals(existingOrder.getProduct().getProductType())) {
+      existingOrder.setProduct(productDao.getProductType(newProductType));
+      changed = true;
     }
 
-    if (newOrderData.getArea().compareTo(BigDecimal.valueOf(100)) >= 0) {
-      existingOrder.setArea(newOrderData.getArea());
+    if (!newArea.equals(existingOrder.getArea().toString())) {
+      existingOrder.setArea(new BigDecimal(newArea));
+      changed = true;
     }
 
-    // Recalculate total cost after modifications
-    recalculateOrder(existingOrder);
 
-    // Persist changes
-    orderDao.editOrder(orderNumber, date);
+
+//    if (!newCustomerName.isBlank()) {
+//      validateCustomerName(newCustomerName);
+//      existingOrder.setCustomerName(newCustomerName);
+//    }
+//
+//    if (!newState.isBlank()) {
+//      validateState(newState);
+//      Tax newTax = taxDao.getTaxByState(newState);
+//      existingOrder.setState(newState);
+//      existingOrder.setTax(newTax);
+//    }
+//
+//    if (!newProductType.isBlank()) {
+//      Product newProduct = productDao.getProductType(newProductType);
+//      existingOrder.setProduct(newProduct);
+//    }
+//
+//    if (!newArea.isBlank()) {
+//      try {
+//        BigDecimal areaValue = new BigDecimal(newArea);
+//        validateArea(areaValue);
+//        existingOrder.setArea(areaValue);
+//        changed = true;
+//      } catch (NumberFormatException e) {
+//        throw new IllegalArgumentException("Invalid area format. Please enter a valid number.");
+//      }
+//    }
+
+   if (changed) {
+     recalculateOrder(existingOrder);
+   }
+
+    // Persist the changes
+    orderDao.editOrder(orderNumber, date,existingOrder);
     return existingOrder;
   }
 
