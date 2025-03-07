@@ -1,12 +1,10 @@
 package com.mthree.flooringmastery.service;
 
-import com.mthree.flooringmastery.dao.FlooringMasterPersistenceException;
 import com.mthree.flooringmastery.dao.OrderDao;
 import com.mthree.flooringmastery.dao.ProductDao;
 import com.mthree.flooringmastery.dao.TaxDao;
 import com.mthree.flooringmastery.model.Order;
 import com.mthree.flooringmastery.model.Product;
-import com.mthree.flooringmastery.model.Tax;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
