@@ -68,36 +68,23 @@ public class FlooringMasteryController {
 
   private void addOrder() {
     LocalDate date = view.getDateAfter();
-
-    // Validate customer name
-    String customerName;
-    while (true) {
-      try {
-        customerName = view.getCustomerName();
-        service.validateCustomerName(customerName);
-        break;
-      } catch (IllegalArgumentException e) {
-        view.displayErrorMessage(e.getMessage());
-      }
-  }
-
-    // Validate state
-    String state;
-    while (true) {
-      try {
-        state = view.getState();
-        service.validateState(state);
-        break;
-      } catch (IllegalArgumentException e) {
-        view.displayErrorMessage(e.getMessage());
-      }
-    }
+    //Validate Customer and State
+    String customerName = validateCustomerName();
+    String state = validateState();
 
     // Fetch all products from the service and display them
     List<Product> products = service.getAllProducts();
     String productType = view.getProductSelection(products);
 
     // Validate area
+    BigDecimal area = validateArea();
+    Order newOrder = service.addOrder(date, customerName, state, productType, area);
+
+    // Confirm before adding
+    view.displayOrderDetails(newOrder);
+  }
+
+  private BigDecimal validateArea() {
     BigDecimal area;
     while (true) {
       try {
@@ -108,30 +95,136 @@ public class FlooringMasteryController {
         view.displayErrorMessage(e.getMessage());
       }
     }
-    Order newOrder = service.addOrder(date, customerName, state, productType, area);
-
-    // Confirm before adding
-    view.displayOrderDetails(newOrder);
+    return area;
   }
 
-  private void editOrder() {
-    LocalDate date = view.getDateInput();
-    String orderNumber = view.getOrderNumber();
-    Order existingOrder = service.getOrder(orderNumber, date);
+  private String validateState() {
+    String state;
+    while (true) {
+      try {
+        state = view.getState();
+        service.validateState(state);
+        break;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage(e.getMessage());
+      }
+    }
+    return state;
+  }
+
+//private void editOrder() {
+//  Order existingOrder;
+//  LocalDate date;
+//  String orderNumber;
+//
+//  do {
+//    date = view.getDateInput();
+//    orderNumber = view.getOrderNumber();
+//    existingOrder = service.getOrder(orderNumber, date);
+//
+//    if (existingOrder == null) {
+//      view.displayMessage("Order not found. Please try again.");
+//    }
+//  } while (existingOrder == null);
+//
+//  // Get updates from the user
+//  String newCustomerName = view.getUpdatedCustomerName(existingOrder.getCustomerName());
+//  String newState = view.getUpdatedState(existingOrder.getState());
+//
+//  List<Product> products = service.getAllProducts();
+//  view.displayProductUpdateMessage( existingOrder.getProduct().getProductType());
+//  String newProductType = view.getProductSelection(products);
+//
+//  String areaInput = view.getUpdatedArea(existingOrder.getArea().toString());
+//
+//  // Pass the changes to the service layer for validation & processing
+//  try {
+//    Order updatedOrder = service.editOrder(orderNumber, date, newCustomerName, newState, newProductType, areaInput);
+//    view.displayOrderDetails(updatedOrder);
+//    view.displayMessage("Order successfully updated!");
+//  } catch (IllegalArgumentException e) {
+//    view.displayErrorMessage(e.getMessage());
+//  }
+//}
+private void editOrder() {
+  Order existingOrder;
+  LocalDate date;
+  String orderNumber;
+
+  // Keep prompting until a valid order is found
+  do {
+    date = view.getDateInput();
+    orderNumber = view.getOrderNumber();
+    existingOrder = service.getOrder(orderNumber, date);
 
     if (existingOrder == null) {
-      view.displayMessage("Order not found.");
-      return;
+      view.displayMessage("Order not found. Please try again.");
     }
+  } while (existingOrder == null);
 
-    Order updatedOrder = view.getUpdatedOrderDetails(existingOrder);
-    try {
-      Order editedOrder = service.editOrder(orderNumber, date, updatedOrder);
-      view.displayOrderDetails(editedOrder);
-    } catch (IllegalArgumentException e) {
-      view.displayErrorMessage("Error: " + e.getMessage());
+  // Get updated values from the user, ensuring valid input
+  String newCustomerName = validateUpdatedCustomerName(existingOrder.getCustomerName());
+  String newState = validateUpdatedState(existingOrder.getState());
+
+  List<Product> products = service.getAllProducts();
+  view.displayProductUpdateMessage( existingOrder.getProduct().getProductType());
+  String newProductType = view.getProductSelection(products);
+
+  String areaInput = validateUpdatedArea(existingOrder.getArea());
+
+  // Pass the changes to the service layer for validation & processing
+  try {
+    Order updatedOrder = service.editOrder(orderNumber, date, newCustomerName, newState, newProductType, areaInput);
+    view.displayOrderDetails(updatedOrder);
+    view.displayMessage("Order successfully updated!");
+  } catch (IllegalArgumentException e) {
+    view.displayErrorMessage(e.getMessage());
+  }
+}
+  private String validateUpdatedCustomerName(String oldName) {
+    String customerName;
+    while (true) {
+      customerName = view.getUpdatedCustomerName(oldName);
+      if (customerName.isBlank()) return oldName; // Keep old value if blank
+      try {
+        service.validateCustomerName(customerName);
+        return customerName;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage(e.getMessage());
+      }
     }
   }
+
+  private String validateUpdatedState(String oldState) {
+    String state;
+    while (true) {
+      state = view.getUpdatedState(oldState);
+      if (state.isBlank()) return oldState; // Keep old value if blank
+      try {
+        service.validateState(state);
+        return state;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage(e.getMessage());
+      }
+    }
+  }
+
+  private String validateUpdatedArea(BigDecimal oldArea) {
+    while (true) {
+      String areaInput = view.getUpdatedArea(oldArea.toString());
+      if (areaInput.isBlank()) return oldArea.toString(); // Keep old value if blank
+      try {
+        BigDecimal area = new BigDecimal(areaInput);
+        service.validateArea(area);
+        return areaInput;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage("Invalid area. Please enter a valid number (minimum 100 sq ft).");
+      }
+    }
+  }
+
+
+
 
   private void removeOrder() {
     LocalDate date = view.getDateInput();
@@ -150,6 +243,19 @@ public class FlooringMasteryController {
     } else {
       view.displayMessage("Order removal cancelled.");
     }
+  }
+  private String validateCustomerName(){
+    String customerName;
+    while (true) {
+      try {
+        customerName = view.getCustomerName();
+        service.validateCustomerName(customerName);
+        break;
+      } catch (IllegalArgumentException e) {
+        view.displayErrorMessage(e.getMessage());
+      }
+    }
+    return customerName;
   }
 
   private void exportData() {
