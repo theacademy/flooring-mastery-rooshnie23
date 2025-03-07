@@ -78,35 +78,6 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     }
 
 
-
-//    if (!newCustomerName.isBlank()) {
-//      validateCustomerName(newCustomerName);
-//      existingOrder.setCustomerName(newCustomerName);
-//    }
-//
-//    if (!newState.isBlank()) {
-//      validateState(newState);
-//      Tax newTax = taxDao.getTaxByState(newState);
-//      existingOrder.setState(newState);
-//      existingOrder.setTax(newTax);
-//    }
-//
-//    if (!newProductType.isBlank()) {
-//      Product newProduct = productDao.getProductType(newProductType);
-//      existingOrder.setProduct(newProduct);
-//    }
-//
-//    if (!newArea.isBlank()) {
-//      try {
-//        BigDecimal areaValue = new BigDecimal(newArea);
-//        validateArea(areaValue);
-//        existingOrder.setArea(areaValue);
-//        changed = true;
-//      } catch (NumberFormatException e) {
-//        throw new IllegalArgumentException("Invalid area format. Please enter a valid number.");
-//      }
-//    }
-
    if (changed) {
      recalculateOrder(existingOrder);
    }

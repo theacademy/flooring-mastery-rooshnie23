@@ -112,40 +112,6 @@ public class FlooringMasteryController {
     return state;
   }
 
-//private void editOrder() {
-//  Order existingOrder;
-//  LocalDate date;
-//  String orderNumber;
-//
-//  do {
-//    date = view.getDateInput();
-//    orderNumber = view.getOrderNumber();
-//    existingOrder = service.getOrder(orderNumber, date);
-//
-//    if (existingOrder == null) {
-//      view.displayMessage("Order not found. Please try again.");
-//    }
-//  } while (existingOrder == null);
-//
-//  // Get updates from the user
-//  String newCustomerName = view.getUpdatedCustomerName(existingOrder.getCustomerName());
-//  String newState = view.getUpdatedState(existingOrder.getState());
-//
-//  List<Product> products = service.getAllProducts();
-//  view.displayProductUpdateMessage( existingOrder.getProduct().getProductType());
-//  String newProductType = view.getProductSelection(products);
-//
-//  String areaInput = view.getUpdatedArea(existingOrder.getArea().toString());
-//
-//  // Pass the changes to the service layer for validation & processing
-//  try {
-//    Order updatedOrder = service.editOrder(orderNumber, date, newCustomerName, newState, newProductType, areaInput);
-//    view.displayOrderDetails(updatedOrder);
-//    view.displayMessage("Order successfully updated!");
-//  } catch (IllegalArgumentException e) {
-//    view.displayErrorMessage(e.getMessage());
-//  }
-//}
 private void editOrder() {
   Order existingOrder;
   LocalDate date;
