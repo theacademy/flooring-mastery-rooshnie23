@@ -108,21 +108,19 @@ public class FlooringMasteryView {
     return io.readString("").trim().equalsIgnoreCase("y");
   }
 
-  public Order getUpdatedOrderDetails(Order existingOrder) {
-    System.out.println("\n--- Update Order Details ---");
-    System.out.println("Leave fields blank to keep existing values.");
-
-    String newCustomerName = io.readString("New Customer Name (" + existingOrder.getCustomerName() + "):");
-    String newState = io.readString("New State (" + existingOrder.getState() + "):");
-    String newProductType = io.readString("New Product Type (" + existingOrder.getProduct().getProductType() + "): ");
-    String areaInput = io.readString("New Area (" + existingOrder.getArea() + "): ");
-
-    Order updatedOrder = new Order();
-    updatedOrder.setCustomerName(newCustomerName.isBlank() ? existingOrder.getCustomerName() : newCustomerName);
-    updatedOrder.setState(newState.isBlank() ? existingOrder.getState() : newState);
-    updatedOrder.setProduct(newProductType.isBlank() ? existingOrder.getProduct() : new Product(newProductType));
-    updatedOrder.setArea(areaInput.isBlank() ? existingOrder.getArea() : new BigDecimal(areaInput));
-
-    return updatedOrder;
+  public String getUpdatedCustomerName(String oldName) {
+    return io.readString("Enter new Customer Name (" + oldName + "): ");
   }
+
+  public String getUpdatedState(String oldState) {
+    return io.readString("Enter new State (" + oldState + "): ");
+  }
+
+  public String getUpdatedArea(String oldArea) {
+    return io.readString("Enter new Area (" + oldArea + " sq ft): ");
+  }
+  public void displayProductUpdateMessage(String oldProductType) {
+    io.print("Enter new product type (" + oldProductType + "): ");
+  }
+
 }
