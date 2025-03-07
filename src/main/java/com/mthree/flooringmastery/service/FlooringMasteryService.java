@@ -10,7 +10,7 @@ public interface FlooringMasteryService {
  Order addOrder(LocalDate date, String customerName, String state, String productType, BigDecimal area);
  void removeOrder(String orderNumber, LocalDate date);
  Order getOrder(String orderNumber, LocalDate date);
- Order editOrder(String orderNumber, LocalDate date, Order newOrderData);
+ Order editOrder(String orderNumber, LocalDate date, String newCustomerName, String newState, String newProductType, String newArea);
  void exportAllData();
  List<Order> getOrdersByDate(LocalDate date);
  List<Product> getAllProducts();
