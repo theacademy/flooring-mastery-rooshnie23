@@ -123,4 +123,7 @@ public class FlooringMasteryView {
     io.print("Enter new product type (" + oldProductType + "): ");
   }
 
+  public void displayExportAllOrdersSuccess() {
+    io.print("All orders have been successfully exported to an external file.");
+  }
 }

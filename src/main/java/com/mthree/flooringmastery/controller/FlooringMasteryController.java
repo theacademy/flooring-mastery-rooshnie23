@@ -189,9 +189,6 @@ private void editOrder() {
     }
   }
 
-
-
-
   private void removeOrder() {
     LocalDate date = view.getDateInput();
     String orderNumber = view.getOrderNumber();
@@ -225,8 +222,12 @@ private void editOrder() {
   }
 
   private void exportData() {
-    service.exportAllData();
-    view.displayMessage("All orders have been exported successfully.");
+    try {
+      service.exportAllData();
+      view.displayExportAllOrdersSuccess();
+    } catch (Exception e) {
+      view.displayErrorMessage("Error exporting all orders: " + e.getMessage());
+    }
   }
   private void unknownCommand() {
     view.displayUnknownCommandBanner();

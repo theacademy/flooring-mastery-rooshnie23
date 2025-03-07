@@ -10,5 +10,5 @@ public interface OrderDao {
   void addOrder(String orderNumber, Order order);
   void editOrder(String orderNumber, LocalDate date, Order order);
   void removeOrder(String orderNumber, LocalDate date);
-  void saveOrder();
+  void exportAllData();
 }

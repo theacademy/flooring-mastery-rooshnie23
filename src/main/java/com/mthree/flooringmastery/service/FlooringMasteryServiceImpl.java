@@ -1,5 +1,6 @@
 package com.mthree.flooringmastery.service;
 
+import com.mthree.flooringmastery.dao.FlooringMasterPersistenceException;
 import com.mthree.flooringmastery.dao.OrderDao;
 import com.mthree.flooringmastery.dao.ProductDao;
 import com.mthree.flooringmastery.dao.TaxDao;
@@ -92,7 +93,11 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
   @Override
   public void exportAllData() {
-    orderDao.saveOrder();
+    try {
+      orderDao.exportAllData();
+    } catch (FlooringMasterPersistenceException e) {
+      throw new RuntimeException("Failed to export orders: " + e.getMessage(), e);
+    }
   }
 
   @Override

@@ -58,8 +58,33 @@ public class OrderDaoFileImpl implements OrderDao {
   }
 
   @Override
-  public void saveOrder() {
+  public void exportAllData() {
+    File ordersDirectory = new File("Orders/");
+    File[] orderFiles = ordersDirectory.listFiles((dir, name) -> name.startsWith("Orders_") && name.endsWith(".txt"));
 
+    if (orderFiles == null || orderFiles.length == 0) {
+      throw new FlooringMasterPersistenceException("No orders found to export.");
+    }
+
+    File exportFileLocation = new File("AllOrders.txt");
+
+    try (PrintWriter out = new PrintWriter(new FileWriter(exportFileLocation))) {
+      // Write header
+      out.println("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot," +
+          "LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total");
+
+      for (File file : orderFiles) {
+        loadOrders(file.getAbsolutePath()); // Load orders into memory
+
+        for (Order order : orders.values()) {
+          String orderAsText = marshallOrder(order);
+          out.println(orderAsText);
+        }
+      }
+      out.flush();
+    } catch (IOException e) {
+      throw new FlooringMasterPersistenceException("Could not export orders.", e);
+    }
   }
 
   public boolean doesOrderFileExist(LocalDate date) {
