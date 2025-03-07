@@ -1,7 +1,9 @@
 package com.mthree.flooringmastery.controller;
 
+import com.mthree.flooringmastery.dao.FlooringMasterPersistenceException;
 import com.mthree.flooringmastery.model.Order;
 import com.mthree.flooringmastery.model.Product;
+import com.mthree.flooringmastery.service.FlooringMasteryDataValidationException;
 import com.mthree.flooringmastery.service.FlooringMasteryService;
 import com.mthree.flooringmastery.ui.FlooringMasteryView;
 import java.math.BigDecimal;
@@ -78,10 +80,14 @@ public class FlooringMasteryController {
 
     // Validate area
     BigDecimal area = validateArea();
-    Order newOrder = service.addOrder(date, customerName, state, productType, area);
+    Order newOrder;
+    try {
+      newOrder = service.addOrder(date, customerName, state, productType, area);
+      view.displayOrderDetails(newOrder);
+    } catch (FlooringMasteryDataValidationException | FlooringMasterPersistenceException e) {
+      view.displayErrorMessage(e.getMessage());
+    }
 
-    // Confirm before adding
-    view.displayOrderDetails(newOrder);
   }
 
   private BigDecimal validateArea() {
@@ -91,7 +97,7 @@ public class FlooringMasteryController {
         area = view.getArea();
         service.validateArea(area);
         break;
-      } catch (IllegalArgumentException e) {
+      } catch (FlooringMasteryDataValidationException e) {
         view.displayErrorMessage(e.getMessage());
       }
     }
@@ -105,7 +111,7 @@ public class FlooringMasteryController {
         state = view.getState();
         service.validateState(state);
         break;
-      } catch (IllegalArgumentException e) {
+      } catch (FlooringMasteryDataValidationException e) {
         view.displayErrorMessage(e.getMessage());
       }
     }
@@ -143,7 +149,7 @@ private void editOrder() {
     Order updatedOrder = service.editOrder(orderNumber, date, newCustomerName, newState, newProductType, areaInput);
     view.displayOrderDetails(updatedOrder);
     view.displayMessage("Order successfully updated!");
-  } catch (IllegalArgumentException e) {
+  } catch (FlooringMasterPersistenceException | FlooringMasteryDataValidationException e) {
     view.displayErrorMessage(e.getMessage());
   }
 }
@@ -155,7 +161,7 @@ private void editOrder() {
       try {
         service.validateCustomerName(customerName);
         return customerName;
-      } catch (IllegalArgumentException e) {
+      } catch (FlooringMasteryDataValidationException e) {
         view.displayErrorMessage(e.getMessage());
       }
     }
@@ -169,7 +175,7 @@ private void editOrder() {
       try {
         service.validateState(state);
         return state;
-      } catch (IllegalArgumentException e) {
+      } catch (FlooringMasteryDataValidationException e) {
         view.displayErrorMessage(e.getMessage());
       }
     }
@@ -183,7 +189,7 @@ private void editOrder() {
         BigDecimal area = new BigDecimal(areaInput);
         service.validateArea(area);
         return areaInput;
-      } catch (IllegalArgumentException e) {
+      } catch (FlooringMasteryDataValidationException e) {
         view.displayErrorMessage("Invalid area. Please enter a valid number (minimum 100 sq ft).");
       }
     }
@@ -214,7 +220,7 @@ private void editOrder() {
         customerName = view.getCustomerName();
         service.validateCustomerName(customerName);
         break;
-      } catch (IllegalArgumentException e) {
+      } catch (FlooringMasteryDataValidationException e) {
         view.displayErrorMessage(e.getMessage());
       }
     }
@@ -225,7 +231,7 @@ private void editOrder() {
     try {
       service.exportAllData();
       view.displayExportAllOrdersSuccess();
-    } catch (Exception e) {
+    } catch (FlooringMasterPersistenceException e) {
       view.displayErrorMessage("Error exporting all orders: " + e.getMessage());
     }
   }

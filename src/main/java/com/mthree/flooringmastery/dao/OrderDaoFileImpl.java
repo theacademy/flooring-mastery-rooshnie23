@@ -19,7 +19,7 @@ public class OrderDaoFileImpl implements OrderDao {
 
 
   @Override
-  public List<Order> getOrdersByDate(LocalDate date) {
+  public List<Order> getOrdersByDate(LocalDate date) throws FlooringMasterPersistenceException {
     if(doesOrderFileExist(date)){
       loadOrders("Orders/Orders_" + date.format(formatter) + ".txt");
     }
@@ -27,20 +27,20 @@ public class OrderDaoFileImpl implements OrderDao {
   }
 
   @Override
-  public Order getOrder(String orderNumber,LocalDate date) {
+  public Order getOrder(String orderNumber,LocalDate date) throws FlooringMasterPersistenceException {
     getOrdersByDate(date);
     return orders.get(orderNumber);
   }
 
   @Override
-  public void addOrder(String orderNumber, Order order) {
+  public void addOrder(String orderNumber, Order order) throws FlooringMasterPersistenceException {
     orders.put(orderNumber, order);
     getOrdersByDate(order.getOrderDate());
     writeOrder(order.getOrderDate());
   }
 
   @Override
-  public void editOrder(String orderNumber, LocalDate date, Order newOrder) { //maybe the object
+  public void editOrder(String orderNumber, LocalDate date, Order newOrder) throws FlooringMasterPersistenceException{
     getOrdersByDate(date);
     orders.remove(orderNumber);
     orders.put(newOrder.getOrderNumber(), newOrder);
@@ -49,7 +49,7 @@ public class OrderDaoFileImpl implements OrderDao {
   }
 
   @Override
-  public void removeOrder(String orderNumber, LocalDate date) {
+  public void removeOrder(String orderNumber, LocalDate date) throws FlooringMasterPersistenceException{
     if (doesOrderFileExist(date)) {
       loadOrders("Orders/Orders_" + date.format(formatter) + ".txt");
       orders.remove(orderNumber);
@@ -58,7 +58,7 @@ public class OrderDaoFileImpl implements OrderDao {
   }
 
   @Override
-  public void exportAllData() {
+  public void exportAllData() throws FlooringMasterPersistenceException{
     File ordersDirectory = new File("Orders/");
     File[] orderFiles = ordersDirectory.listFiles((dir, name) -> name.startsWith("Orders_") && name.endsWith(".txt"));
 

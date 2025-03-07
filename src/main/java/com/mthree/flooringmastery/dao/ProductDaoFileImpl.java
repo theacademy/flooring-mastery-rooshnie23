@@ -22,22 +22,22 @@ public class ProductDaoFileImpl implements ProductDao {
   }
 
   @Override
-  public Product getProductType(String productType) {
+  public Product getProductType(String productType) throws FlooringMasterPersistenceException{
     return products.get(productType);
   }
 
   @Override
-  public List<Product> getAllProducts() {
+  public List<Product> getAllProducts() throws FlooringMasterPersistenceException{
     return new ArrayList<>(products.values());
   }
 
   @Override
-  public BigDecimal getCostPerSquareFoot(String productType) {
+  public BigDecimal getCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException{
     return products.get(productType).getCostPerSquareFoot();
   }
 
   @Override
-  public BigDecimal getLaborCostPerSquareFoot(String productType) {
+  public BigDecimal getLaborCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException{
     return products.get(productType).getLaborCostPerSquareFoot();
   }
   private Product unmarshallProduct(String productsAsText) {

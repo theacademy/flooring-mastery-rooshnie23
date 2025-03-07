@@ -23,18 +23,20 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
   }
 
   @Override
-  public List<Order> getOrdersByDate(LocalDate date) {
+  public List<Order> getOrdersByDate(LocalDate date) throws FlooringMasterPersistenceException{
     return orderDao.getOrdersByDate(date);
   }
 
   @Override
-  public Order getOrder(String orderNumber, LocalDate date) {
+  public Order getOrder(String orderNumber, LocalDate date) throws FlooringMasterPersistenceException {
     return orderDao.getOrder(orderNumber,date);
   }
 
   @Override
-  public Order addOrder(LocalDate date, String customerName, String state, String productType,
-      BigDecimal area) {
+  public Order addOrder(LocalDate date, String customerName, String state, String productType, BigDecimal area) throws FlooringMasterPersistenceException,FlooringMasteryDataValidationException{
+    if (taxDao.getTaxByState(state) == null) {
+      throw new FlooringMasteryDataValidationException("Invalid state. We do not sell in this state.");
+    }
 
     Order newOrder = new Order();
     newOrder.setOrderDate(date);
@@ -42,6 +44,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     newOrder.setState(state);
     newOrder.setProduct(productDao.getProductType(productType));
     newOrder.setTax(taxDao.getTaxByState(state));
+    validateArea(area);
     newOrder.setArea(area);
 
     recalculateOrder(newOrder);
@@ -53,15 +56,18 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
   }
 
   @Override
-  public Order editOrder(String orderNumber, LocalDate date, String newCustomerName, String newState, String newProductType, String newArea) {
+  public Order editOrder(String orderNumber, LocalDate date, String newCustomerName, String newState, String newProductType, String newArea) throws FlooringMasterPersistenceException, FlooringMasteryDataValidationException {
     Order existingOrder = orderDao.getOrder(orderNumber,date);
     boolean changed = false;
 
     if (!newCustomerName.equals(existingOrder.getCustomerName())) {
+      validateCustomerName(newCustomerName);
       existingOrder.setCustomerName(newCustomerName);
     }
 
     if (!newState.equals(existingOrder.getState())) {
+      validateState(newState);
+      existingOrder.setTax(taxDao.getTaxByState(newState));
       existingOrder.setState(newState);
       changed = true;
     }
@@ -72,6 +78,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     }
 
     if (!newArea.equals(existingOrder.getArea().toString())) {
+      validateArea(new BigDecimal(newArea));
       existingOrder.setArea(new BigDecimal(newArea));
       changed = true;
     }
@@ -87,7 +94,12 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
   }
 
   @Override
-  public void removeOrder(String orderNumber, LocalDate date) {
+  public void removeOrder(String orderNumber, LocalDate date) throws FlooringMasterPersistenceException {
+    Order existingOrder = orderDao.getOrder(orderNumber,date);
+    if (existingOrder == null) {
+      throw new FlooringMasterPersistenceException("Order does not exist.");
+    }
+
     orderDao.removeOrder(orderNumber, date);
   }
 
@@ -101,7 +113,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
   }
 
   @Override
-  public List<Product> getAllProducts() {
+  public List<Product> getAllProducts() throws FlooringMasterPersistenceException{
     return productDao.getAllProducts();
   }
 
@@ -133,23 +145,25 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
   }
 
   @Override
-  public void validateCustomerName(String name) {
+  public void validateCustomerName(String name) throws FlooringMasteryDataValidationException {
     if (name == null || !name.matches("[a-zA-Z0-9,. ]+")) {
-      throw new IllegalArgumentException(
+      throw new FlooringMasteryDataValidationException(
           "Invalid customer name. Only letters, numbers, spaces, commas, and periods are allowed.");
     }
   }
 
   @Override
-  public void validateState(String state) {
+  public void validateState(String state) throws FlooringMasteryDataValidationException {
     if (taxDao.getTaxByState(state.toUpperCase()) == null) {
-      throw new IllegalArgumentException("Invalid state. We do not sell in this state.");
+      throw new FlooringMasteryDataValidationException("Invalid state. We do not sell in this state.");
     }
   }
-  @Override
-  public void validateArea(BigDecimal area) {
+  public void validateArea(BigDecimal area) throws FlooringMasteryDataValidationException {
+    if (area == null || area.compareTo(BigDecimal.ZERO) < 0) {
+      throw new FlooringMasteryDataValidationException("Invalid area. Area cannot be negative.");
+    }
     if (area.compareTo(BigDecimal.valueOf(100)) < 0) {
-      throw new IllegalArgumentException("Invalid area. Minimum order size is 100 sq ft.");
+      throw new FlooringMasteryDataValidationException("Invalid area. Minimum order size is 100 sq ft.");
     }
   }
 

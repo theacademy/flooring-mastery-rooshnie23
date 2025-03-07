@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductDao {
-  Product getProductType(String productType);
-  List<Product> getAllProducts();
-  BigDecimal getCostPerSquareFoot(String productType);
-  BigDecimal getLaborCostPerSquareFoot(String productType);
+  Product getProductType(String productType) throws FlooringMasterPersistenceException;
+  List<Product> getAllProducts() throws FlooringMasterPersistenceException;
+  BigDecimal getCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException;
+  BigDecimal getLaborCostPerSquareFoot(String productType) throws FlooringMasterPersistenceException;
 }

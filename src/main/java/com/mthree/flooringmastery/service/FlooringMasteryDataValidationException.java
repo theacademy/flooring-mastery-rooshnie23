@@ -1,11 +1,11 @@
 package com.mthree.flooringmastery.service;
 
-public class FlooringMasteryDuplicateDateException extends Exception {
+public class FlooringMasteryDataValidationException extends Exception {
 
-  public FlooringMasteryDuplicateDateException(String message) {
+  public FlooringMasteryDataValidationException(String message) {
     super(message);
   }
-  public FlooringMasteryDuplicateDateException(String message,
+  public FlooringMasteryDataValidationException(String message,
       Throwable cause) {
     super(message, cause);
   }

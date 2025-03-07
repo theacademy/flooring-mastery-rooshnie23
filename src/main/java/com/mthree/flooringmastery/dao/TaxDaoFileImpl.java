@@ -20,17 +20,17 @@ public class TaxDaoFileImpl implements TaxDao {
   }
 
   @Override
-  public Tax getTaxByState(String stateAbbr) {
+  public Tax getTaxByState(String stateAbbr) throws FlooringMasterPersistenceException {
     return taxes.get(stateAbbr);
   }
 
   @Override
-  public String getStateName() {
+  public String getStateName() throws FlooringMasterPersistenceException {
     return "";
   }
 
   @Override
-  public String getStateAbbr() {
+  public String getStateAbbr() throws FlooringMasterPersistenceException{
     return "";
   }
 

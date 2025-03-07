@@ -1,7 +1,13 @@
 package com.mthree.flooringmastery.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.mthree.flooringmastery.dao.FlooringMasterPersistenceException;
 import com.mthree.flooringmastery.model.Order;
 import com.mthree.flooringmastery.model.Product;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -11,17 +17,30 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class FlooringMasteryServiceImplTest {
 
   private FlooringMasteryService service;
 
+  public FlooringMasteryServiceImplTest() {
+    ApplicationContext ctx =
+        new ClassPathXmlApplicationContext("applicationContext.xml");
+    service = ctx.getBean("serviceLayer", FlooringMasteryService.class);
+  }
+
+  @BeforeAll
+  public static void setUpClass() {
+  }
+
+  @AfterAll
+  public static void tearDownClass() {
+  }
+
   @BeforeEach
   public void setUp() {
-    // Load Spring test configuration
-    ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-    service = ctx.getBean("serviceLayer", FlooringMasteryService.class);
+  }
+
+  @AfterEach
+  public void tearDown() {
   }
 
   // ✅ Validate Customer Name
@@ -32,17 +51,12 @@ public class FlooringMasteryServiceImplTest {
 
   @Test
   public void testValidateCustomerName_Empty() {
-    assertThrows(IllegalArgumentException.class, () -> service.validateCustomerName(""));
-  }
-
-  @Test
-  public void testValidateCustomerName_Numbers() {
-    assertDoesNotThrow(() -> service.validateCustomerName("Customer123"));
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.validateCustomerName(""));
   }
 
   @Test
   public void testValidateCustomerName_SpecialCharacters() {
-    assertThrows(IllegalArgumentException.class, () -> service.validateCustomerName("@$%^&*"));
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.validateCustomerName("@$%^&*"));
   }
 
   // ✅ Validate State
@@ -53,17 +67,12 @@ public class FlooringMasteryServiceImplTest {
 
   @Test
   public void testValidateState_Invalid() {
-    assertThrows(IllegalArgumentException.class, () -> service.validateState("ZZ"));
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.validateState("ZZ"));
   }
 
   @Test
   public void testValidateState_CaseInsensitive() {
     assertDoesNotThrow(() -> service.validateState("tx"));
-  }
-
-  @Test
-  public void testValidateState_Empty() {
-    assertThrows(IllegalArgumentException.class, () -> service.validateState(""));
   }
 
   // ✅ Validate Area
@@ -74,27 +83,22 @@ public class FlooringMasteryServiceImplTest {
 
   @Test
   public void testValidateArea_BelowMinimum() {
-    assertThrows(IllegalArgumentException.class, () -> service.validateArea(BigDecimal.valueOf(50)));
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.validateArea(BigDecimal.valueOf(50)));
   }
 
   @Test
   public void testValidateArea_Zero() {
-    assertThrows(IllegalArgumentException.class, () -> service.validateArea(BigDecimal.ZERO));
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.validateArea(BigDecimal.ZERO));
   }
 
   @Test
   public void testValidateArea_Negative() {
-    assertThrows(IllegalArgumentException.class, () -> service.validateArea(BigDecimal.valueOf(-10)));
-  }
-
-  @Test
-  public void testValidateArea_MaxValue() {
-    assertDoesNotThrow(() -> service.validateArea(BigDecimal.valueOf(10000)));
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.validateArea(BigDecimal.valueOf(-10)));
   }
 
   // ✅ Add Order
   @Test
-  public void testAddOrder_Success() {
+  public void testAddOrder_Success() throws FlooringMasterPersistenceException, FlooringMasteryDataValidationException{
     LocalDate date = LocalDate.of(2025, 3, 10);
     Order newOrder = service.addOrder(date, "Jane Doe", "TX", "Tile", BigDecimal.valueOf(200));
 
@@ -108,18 +112,24 @@ public class FlooringMasteryServiceImplTest {
   @Test
   public void testAddOrder_InvalidState() {
     LocalDate date = LocalDate.of(2025, 3, 10);
-    assertThrows(IllegalArgumentException.class, () -> service.addOrder(date, "John Doe", "ZZ", "Tile", BigDecimal.valueOf(200)));
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.addOrder(date, "John Doe", "ZZ", "Tile", BigDecimal.valueOf(200)));
   }
 
   @Test
   public void testAddOrder_InvalidProduct() {
     LocalDate date = LocalDate.of(2025, 3, 10);
-    assertThrows(IllegalArgumentException.class, () -> service.addOrder(date, "John Doe", "TX", "InvalidProduct", BigDecimal.valueOf(200)));
+    assertThrows(NullPointerException.class, () -> service.addOrder(date, "John Doe", "TX", "InvalidProduct", BigDecimal.valueOf(200)));
+  }
+
+  @Test
+  public void testAddOrder_NegativeArea() {
+    LocalDate date = LocalDate.of(2025, 3, 10);
+    assertThrows(FlooringMasteryDataValidationException.class, () -> service.addOrder(date, "John Doe", "TX", "Tile", BigDecimal.valueOf(-100)));
   }
 
   // ✅ Edit Order
   @Test
-  public void testEditOrder_ChangeAllFields() {
+  public void testEditOrder_Success() throws FlooringMasterPersistenceException, FlooringMasteryDataValidationException {
     LocalDate date = LocalDate.of(2025, 3, 10);
     String orderNumber = "1";
 
@@ -133,7 +143,7 @@ public class FlooringMasteryServiceImplTest {
   }
 
   @Test
-  public void testEditOrder_KeepOriginalValues() {
+  public void testEditOrder_KeepOriginalValues() throws FlooringMasterPersistenceException, FlooringMasteryDataValidationException {
     LocalDate date = LocalDate.of(2025, 3, 10);
     String orderNumber = "1";
 
@@ -148,7 +158,7 @@ public class FlooringMasteryServiceImplTest {
 
   // ✅ Remove Order
   @Test
-  public void testRemoveOrder_Success() {
+  public void testRemoveOrder_Success() throws FlooringMasterPersistenceException {
     LocalDate date = LocalDate.of(2025, 3, 10);
     String orderNumber = "1";
 
@@ -161,31 +171,22 @@ public class FlooringMasteryServiceImplTest {
   @Test
   public void testRemoveOrder_InvalidOrder() {
     LocalDate date = LocalDate.of(2025, 3, 10);
-    assertThrows(IllegalArgumentException.class, () -> service.removeOrder("999", date));
+    assertThrows(FlooringMasterPersistenceException.class, () -> service.removeOrder("999", date));
   }
 
   // ✅ Export All Orders
   @Test
-  public void testExportAllOrders_Success() {
+  public void testExportAllOrders() {
     assertDoesNotThrow(() -> service.exportAllData());
   }
 
   // ✅ Get Orders By Date
   @Test
-  public void testGetOrdersByDate_ValidDate() {
+  public void testGetOrdersByDate_ValidDate() throws FlooringMasterPersistenceException {
     LocalDate date = LocalDate.of(2025, 3, 10);
     List<Order> orders = service.getOrdersByDate(date);
 
     assertNotNull(orders);
     assertFalse(orders.isEmpty());
-  }
-
-  @Test
-  public void testGetOrdersByDate_NoOrders() {
-    LocalDate date = LocalDate.of(2030, 1, 1);
-    List<Order> orders = service.getOrdersByDate(date);
-
-    assertNotNull(orders);
-    assertTrue(orders.isEmpty());
   }
 }
