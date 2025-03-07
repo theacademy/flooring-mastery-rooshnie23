@@ -13,6 +13,7 @@ public interface FlooringMasteryService {
  Order getOrder(String orderNumber, LocalDate date) throws FlooringMasterPersistenceException;
  Order editOrder(String orderNumber, LocalDate date, String newCustomerName, String newState, String newProductType, String newArea) throws FlooringMasterPersistenceException,FlooringMasteryDataValidationException;
  void exportAllData() throws FlooringMasterPersistenceException;
+ void exportActiveOrders() throws FlooringMasterPersistenceException;
  List<Order> getOrdersByDate(LocalDate date) throws FlooringMasterPersistenceException;
  List<Product> getAllProducts() throws FlooringMasterPersistenceException;
  void validateCustomerName(String name) throws FlooringMasteryDataValidationException;

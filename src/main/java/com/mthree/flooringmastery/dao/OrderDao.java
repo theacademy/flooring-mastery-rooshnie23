@@ -11,4 +11,6 @@ public interface OrderDao {
   void editOrder(String orderNumber, LocalDate date, Order order) throws FlooringMasterPersistenceException;
   void removeOrder(String orderNumber, LocalDate date) throws FlooringMasterPersistenceException;
   void exportAllData() throws FlooringMasterPersistenceException;
+  void exportActiveOrders() throws FlooringMasterPersistenceException;
+
 }

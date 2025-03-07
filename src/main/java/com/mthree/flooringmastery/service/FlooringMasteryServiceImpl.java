@@ -112,6 +112,15 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
       throw new RuntimeException("Failed to export orders: " + e.getMessage(), e);
     }
   }
+  @Override
+  public void exportActiveOrders() {
+    try {
+      orderDao.exportActiveOrders();
+    } catch (FlooringMasterPersistenceException e) {
+      throw new RuntimeException("Failed to export active orders: " + e.getMessage(), e);
+    }
+  }
+
 
   @Override
   public List<Product> getAllProducts() throws FlooringMasterPersistenceException{

@@ -84,6 +84,49 @@ public class OrderDaoFileImpl implements OrderDao {
       throw new FlooringMasterPersistenceException("Could not export orders.", e);
     }
   }
+  @Override
+  public void exportActiveOrders() throws FlooringMasterPersistenceException {
+    File ordersDirectory = new File("Orders/");
+    File[] orderFiles = ordersDirectory.listFiles((dir, name) -> name.startsWith("Orders_") && name.endsWith(".txt"));
+
+    if (orderFiles == null || orderFiles.length == 0) {
+      throw new FlooringMasterPersistenceException("No orders found to export.");
+    }
+
+    File backupDir = new File("Backup/");
+    if (!backupDir.exists()) {
+      backupDir.mkdir(); // Ensure Backup folder exists
+    }
+
+    File exportFile = new File("Backup/DataExport.txt");
+
+    try (PrintWriter out = new PrintWriter(new FileWriter(exportFile))) {
+      // Write header including OrderDate column
+      out.println("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot," +
+          "LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate");
+
+      for (File file : orderFiles) {
+        String fileName = file.getName();
+        LocalDate orderDate = Pattern.compile("_(\\d{8})\\.txt$")
+            .matcher(fileName)
+            .results()
+            .map(m -> LocalDate.parse(m.group(1), DateTimeFormatter.ofPattern("MMddyyyy")))
+            .findFirst()
+            .orElse(null);
+
+        loadOrders(file.getAbsolutePath());
+
+        for (Order order : orders.values()) {
+          String orderAsText = marshallOrder(order) + "," + orderDate.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+          out.println(orderAsText);
+        }
+      }
+      out.flush();
+    } catch (IOException e) {
+      throw new FlooringMasterPersistenceException("Could not export orders.", e);
+    }
+  }
+
 
   public boolean doesOrderFileExist(LocalDate date) {
     return new File("Orders/Orders_" + date.format(formatter) + ".txt").exists();

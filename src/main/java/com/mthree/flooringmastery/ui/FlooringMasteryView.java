@@ -22,9 +22,10 @@ public class FlooringMasteryView {
     io.print("3. Edit an Order");
     io.print("4. Remove an Order");
     io.print("5. Export All Data");
-    io.print("6. Quit");
+    io.print("6. Export Active Orders");
+    io.print("7. Quit");
     io.print("*\n" + "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-    return io.readInt("Please select from the above choices.", 1, 6);
+    return io.readInt("Please select from the above choices.", 1, 7);
   }
 
   public void displayExitBanner() {
@@ -126,4 +127,8 @@ public class FlooringMasteryView {
   public void displayExportAllOrdersSuccess() {
     io.print("All orders have been successfully exported to an external file.");
   }
+  public void displayExportActiveOrdersSuccess() {
+    io.print("All active orders have been successfully exported to Backup/DataExport.txt.");
+  }
+
 }

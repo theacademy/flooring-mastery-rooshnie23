@@ -45,6 +45,9 @@ public class FlooringMasteryController {
             exportData();
             break;
           case 6:
+            exportActiveOrders();
+            break;
+          case 7:
             keepGoing = false;
             break;
           default:
@@ -235,6 +238,15 @@ private void editOrder() {
       view.displayErrorMessage("Error exporting all orders: " + e.getMessage());
     }
   }
+  private void exportActiveOrders() {
+    try {
+      service.exportActiveOrders();
+      view.displayExportActiveOrdersSuccess();
+    } catch (Exception e) {
+      view.displayErrorMessage("Error exporting active orders: " + e.getMessage());
+    }
+  }
+
   private void unknownCommand() {
     view.displayUnknownCommandBanner();
   }
