@@ -27,7 +27,8 @@ public class OrderDaoFileImpl implements OrderDao {
   }
 
   @Override
-  public Order getOrder(String orderNumber) {
+  public Order getOrder(String orderNumber,LocalDate date) {
+    getOrdersByDate(date);
     return orders.get(orderNumber);
   }
 
@@ -39,11 +40,11 @@ public class OrderDaoFileImpl implements OrderDao {
   }
 
   @Override
-  public void editOrder(String orderNumber, LocalDate date) { //maybe the object
-      if (doesOrderFileExist(date)) {
-        getOrdersByDate(date);
-        writeOrder(date);
-      }
+  public void editOrder(String orderNumber, LocalDate date, Order newOrder) { //maybe the object
+    getOrdersByDate(date);
+    orders.remove(orderNumber);
+    orders.put(newOrder.getOrderNumber(), newOrder);
+    writeOrder(date);
 
   }
 
